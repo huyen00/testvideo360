@@ -665,15 +665,7 @@
 		</image>
 		<hotspot name="spot1" style="skin_hotspotstyle"   ath="179.107" atv="0.560" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
 		<hotspot name="spot2" style="skin_hotspotstyle"    ath="0.714" atv="-0.222" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
-		<hotspot name="youtubespot"
-	        url="assets/img/iconyoutube.png"
-	        scale="0.1"
-	        zoom="true"
-	       ath="-53.938" atv="1.755" 
-			ondown="draghotspot();" 
-			onloaded="wobble(scale,0.1,0.11,0.3);"
-	        onclick="looktohotspot(get(name),90); youtubeplayer_open('LKG2njl8dmY');"
-	    />
+		<hotspot name="spot4" style="skin_hotspotstyle_youtube"  ath="-132.904" atv="3.407" distorted="false" zoom="false" onclick="loadscene(videopano1);" />
 	</scene>
 
 <!-- <action name="startup" autorun="onstart">
@@ -733,15 +725,15 @@
 		</action>
 	</scene> -->
 
-		<action name="startup" autorun="onstart">
+		<!-- <action name="startup" autorun="onstart">
 		
 		if(device.panovideosupport == false,
 			error('Sorry, but panoramic videos are not supported by your current browser!');
 		  ,
 			loadscene(videopano);
 		  );
-	</action>
-	<scene name="videopano" title="Video Pano" onstart="" thumburl="panos/video/thumb.jpg" isvideopano="true">
+	</action> -->
+	<!-- <scene name="videopano" title="Video Pano" onstart="" thumburl="panos/video/thumb.jpg" isvideopano="true">
 
     <view hlookat="0" vlookat="0" fovtype="DFOV" fov="130" fovmin="75" fovmax="150" distortion="0.0" />
 
@@ -760,8 +752,8 @@
         onvideoready="skin_showloading(false);"
         />
         
-</scene>
-<!-- 
+</scene> -->
+
 <scene name="videopano" title="krpano Panoramic Video Example">
 		
 		
@@ -782,22 +774,23 @@
 			<sphere url="plugin:video" />
 		</image>
 
-	
+		<layer name="skin_btn_playpause" url="skin/vtourskin.png" crop="0|640|64|64" align="topleft" x="80" y="480" scale="0.6" onclick="plugin[video].togglepause()" />
+		 <layer name="skin_btn" url="skin/vtourskin.png" crop="0|640|64|64" align="topleft" x="150" y="480" scale="0.6" onclick="loadscene(scene_32_bentrongtau_yennghia);" />
 		<view hlookat="0" vlookat="0" fovtype="DFOV" fov="130" fovmin="75" fovmax="150" distortion="0.0" />
 		
 		<action name="add_video_sources" >
 		
 				
 				videointerface_addsource('1024x512', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512a-fs.mp4|https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512a.webm', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512-poster.jpg');
-				videointerface_addsource('1344x672', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1344x672a-fs.mp4|https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1344x672a.webm', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1344x672-poster.jpg');
-				videointerface_addsource('1920x960', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1920x960a-fs.mp4|https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1920x960a.webm', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1920x960-poster.jpg');
-				videointerface_addsource('2048x1024', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-2048x1024a-fs.mp4|https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-2048x1024a.webm', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-2048x1024-poster.jpg');
-				videointerface_addsource('4096x2048', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-4096x2048a-fs.mp4|https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-4096x2048a.webm', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-4096x2048-poster.jpg');
+				videointerface_addsource('1344x672', 'assets/video360/videogataudien.mp4', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512-poster.jpg');
+				videointerface_addsource('1920x960', 'assets/video360/videogataudien.mp4', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512-poster.jpg');
+				videointerface_addsource('2048x1024', 'assets/video360/videogataudien.mp4', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512-poster.jpg');
+				videointerface_addsource('4096x2048', 'assets/video360/videogataudien.mp4', 'https://d8d913s460fub.cloudfront.net/krpanocloud/video/airpano/video-1024x512-poster.jpg');
 			 
 			videointerface_play('1920x960');
 		</action>
 
-	</scene> -->
+	</scene>
 
 </krpano>
 
