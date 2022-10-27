@@ -1,0 +1,651 @@
+﻿<krpano version="1.20.6" title="Virtual Tour" logkey="false" showerrors="false">
+<include url="action_html.xml" />
+
+	
+      <!-- <include url="plugins/showtext.xml" /> -->
+    <!-- <include url="plugins/polygonal_hotspots_editor.xml" if="calc(editor)" /> -->
+    <!-- <include url="plugins/dragg/dragg.xml"  /> -->
+    <include url="option.xml" />
+    <include url="update.xml" />
+    <include url="skin/vtourskin.xml" />
+    <include url="plugins/popup_blur.xml" />
+    <include url="plugins/youtube_player.xml" />
+    <include url="plugins/showtext.xml" />
+          
+	<include url="add_hotspot/plugins_l/add_hotspot.xml" if="calc(editor)"/>
+    <include url="%FIRSTXML%/add_hotspot/plugins_l/plugin_a/poligon.xml" if="calc(editor)"/>
+	<include url="%FIRSTXML%/add_hotspot/plugins_l/plugin_a/vid_hs.xml" if="calc(editor)"/>
+	<include url="%FIRSTXML%/add_hotspot/plugins_l/plugin_a/sound_hs.xml" if="calc(editor)"/>
+	<include url="%FIRSTXML%/add_hotspot/plugins_l/plugin_a/photo.xml" if="calc(editor)"/>
+	<include url="%FIRSTXML%/add_hotspot/plugins_l/plugin_a/youtube.xml" if="calc(editor)"/>
+    <editor_hs pin="mihailov04@ya.ru" />
+    <!-- <include url="index_skin.xml"/> -->
+    <!-- <include url="index_core.xml"/>
+    <include url="index_messages_en.xml"/> -->
+
+
+	
+	<!-- customize skin settings: maps, gyro, webvr, thumbnails, tooltips, layout, design, ... -->
+	<skin_settings
+       maps="true"
+       maps_type="google"
+       maps_bing_api_key=""
+       maps_google_api_key=""
+       maps_zoombuttons="false"
+       maps_loadonfirstuse="true"
+       gyro="true"
+       gyro_keeplookingdirection="false"
+       webvr="true"
+       webvr_keeplookingdirection="true"
+       webvr_prev_next_hotspots="true"
+       autotour="false"
+       littleplanetintro="false"
+       followmousecontrol="false"
+       title="true"
+       thumbs="true"
+       thumbs_width="120" thumbs_height="80" thumbs_padding="10" thumbs_crop="0|40|240|160"
+       thumbs_opened="false"
+       thumbs_text="false"
+       thumbs_dragging="true"
+       thumbs_onhoverscrolling="false"
+       thumbs_scrollbuttons="false"
+       thumbs_scrollindicator="false"
+       thumbs_loop="false"
+       tooltips_buttons="false"
+       tooltips_thumbs="false"
+       tooltips_hotspots="false"
+       tooltips_mapspots="false"
+       deeplinking="false"
+       loadscene_flags="MERGE"
+       loadscene_blend="OPENBLEND(0.5, 0.0, 0.75, 0.05, linear)"
+       loadscene_blend_prev="SLIDEBLEND(0.5, 180, 0.75, linear)"
+       loadscene_blend_next="SLIDEBLEND(0.5,   0, 0.75, linear)"
+       loadingtext="loading..."
+       layout_width="100%"
+       layout_maxwidth="814"
+       controlbar_width="-24"
+       controlbar_height="40"
+       controlbar_offset="20"
+       controlbar_offset_closed="-40"
+       controlbar_overlap.no-fractionalscaling="10"
+       controlbar_overlap.fractionalscaling="0"
+       design_skin_images="vtourskin.png"
+       design_bgcolor="0x2D3E50"
+       design_bgalpha="0.8"
+       design_bgborder="0"
+       design_bgroundedge="1"
+       design_bgshadow="0 4 10 0x000000 0.3"
+       design_thumbborder_bgborder="3 0xFFFFFF 1.0"
+       design_thumbborder_padding="2"
+       design_thumbborder_bgroundedge="0"
+       design_text_css="color:#FFFFFF; font-family:Arial;"
+       design_text_shadow="1"
+
+    />
+
+    <skin_settings
+		devices="mobile|tablet"
+	/>
+
+
+	<!--
+	    For an alternative skin design either change the <skin_settings> values
+	    from above or optionally include one of the predefined designs from below.
+	-->
+	<!-- <include url="skin/vtourskin_design_flat_light.xml"  /> -->
+	<!-- <include url="skin/vtourskin_design_glass.xml" /> -->
+	<!-- <include url="skin/vtourskin_design_ultra_light.xml" /> -->
+	<!-- <include url="skin/vtourskin_design_117.xml"         /> -->
+	<!-- <include url="skin/vtourskin_design_117round.xml"    /> -->
+	<!-- <include url="skin/vtourskin_design_black.xml"       /> -->
+
+
+	<!-- startup action - load the first scene -->
+	<action name="startup" autorun="onstart">
+    
+		if(startscene === null OR !scene[get(startscene)], copy(startscene,scene[0].name); );
+		loadscene(get(startscene), null, MERGE);
+		if(startactions !== null, startactions() );
+  
+         playsound(bgsound, assets/bgsound1.mp3, true, 0.8);
+		set(layer[mapfull].visible,false);
+		set( layer[map2].visible, false);
+        linkscene_title_xml("");  
+       
+        <!-- if(device.panovideosupport == false, error('Sorry, but panoramic videos are not supported by your current browser!'); , loadscene(videopano); ); -->
+       
+		
+	</action>
+	<action name="active_option">
+		set(layer[%1].bgcolor, 0xDF7F2C);
+		set(atH,get(view.hlookat));
+		set(atV,get(view.vlookat));
+		loadscene("%2",null, MERGE);
+		lookat(get(atH),get(atV));
+	</action>
+    <action name="remove_active">
+		set(layer[%1].bgcolor, 0x1F3C22);
+	</action>
+
+	
+    <action name= "showHotSpot">
+		showtext([img src=%1 height=120px width=220px][/img][p style="color="#FF00FF""]%2[/p],Target);
+	</action>
+
+	<scene name="scene_22_gayennghia" title="Ga Yên Nghĩa" onstart="" thumburl="panos/22_gayennghia.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="462.945" vlookat="-8.004" fovtype="MFOV" fov="129.986" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/22_gayennghia.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/22_gayennghia.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="147.464" atv="11.480" distorted="false" zoom="false" linkedscene="scene_23_khukiemsoatve" />
+		<hotspot name="spot2" style="Iconcallout_top" ath="-90.413" atv="-4.909" distorted="false" zoom="false" content="Bến xe Yên Nghĩa" />
+		<hotspot name="spot3" style="Iconcallout_top" ath="-46.657" atv="-7.539" distorted="false" zoom="false" content="Aeon Mall Hà Đông" />
+		
+
+
+	</scene>
+
+	<scene name="scene_23_khukiemsoatve" title="Khu soát vé ga Yên Nghĩa" onstart="" thumburl="panos/23_khukiemsoatve.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-721.665" vlookat="0.914" fovtype="MFOV" fov="111.561" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/23_khukiemsoatve.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/23_khukiemsoatve.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move"  ath="27.084" atv="8.365" distorted="false" zoom="false" linkedscene="scene_24_huonglensanhtau_gayennghia" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev"  ath="-89.031" atv="9.106" distorted="false" zoom="false" linkedscene="scene_22_gayennghia" />
+		<hotspot name="spot3" style="skin_hotspotstyle_info" ath="56.288" atv="3.079" distorted="false" zoom="false" onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))"  />
+		<hotspot name="spot4" style="skin_hotspotstyle_info" ath="-54.271" atv="4.440" distorted="false" zoom="false" onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))" />
+		<hotspot name="spot5" style="skin_hotspotstyle_info"  ath="128.551" atv="14.085" distorted="false" zoom="false" onhover="Thông tin về Máy bán vé tự động" onclick="js(showform('Máy Bán Vé tự động',' Đây là khu vực máy bán vé tự động, dành cho khách hàng đi theo lượt. Giá vé tàu Cát Linh được tính theo quãng đường di chuyển của hành khách, trong đó tối đa 15.000 đồng/lượt nếu đi toàn tuyến và thấp nhất là 8.000 đồng với quãng ngắn nhất.'))" />
+		
+		
+		
+
+	</scene>
+
+	<scene name="scene_24_huonglensanhtau_gayennghia" title="Lối lên/xuống sảnh tàu ga Yên Nghĩa" onstart="" thumburl="panos/24_huonglensanhtau_gayennghia.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.464" vlookat="-9.748" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/24_huonglensanhtau_gayennghia.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/24_huonglensanhtau_gayennghia.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="0.907" atv="-2.405" distorted="false" zoom="false" linkedscene="scene_26_sanhchotau_gayennghia" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev"  ath="-145.918" atv="13.897" distorted="false" zoom="false" linkedscene="scene_23_khukiemsoatve" />
+
+	</scene>
+
+	
+
+	<scene name="scene_26_sanhchotau_gayennghia" title="Sảnh chờ tàu ga Yên nghĩa " onstart="" thumburl="panos/26_sanhchotau_gayennghia.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="26.884" vlookat="-3.770" fovtype="MFOV" fov="131.536" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/26_sanhchotau_gayennghia.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/26_sanhchotau_gayennghia.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev"  ath="-94.154" atv="20.91" distorted="false" zoom="false" linkedscene="scene_24_huonglensanhtau_gayennghia" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move" ath="0.357" atv="14.794" distorted="false" zoom="false" linkedscene="scene_32_bentrongtau_yennghia" />
+		
+		<hotspot name="spot3" style="skin_hotspotstyle"   ath="85.352" atv="0.274" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+
+	</scene>
+	<scene name="scene_32_bentrongtau_yennghia" title="Bên trong tàu ga Yên Nghĩa" onstart="" thumburl="panos/32_bentrongtau_yennghia.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-155.739" vlookat="8.926" fovtype="MFOV" fov="123.999" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/32_bentrongtau_yennghia.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/32_bentrongtau_yennghia.tiles/pano_%s.jpg" />
+		</image>
+
+		<hotspot name="spot1" style="skin_hotspotstyle"   ath="179.046" atv="1.097" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev" ath="-150.122" atv="24.061"  distorted="false" zoom="false" linkedscene="scene_26_sanhchotau_gayennghia" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-35.407" atv="24.743" distorted="false" zoom="false" linkedscene="scene_26_sanhchotau_gayennghia" />
+
+	</scene>
+
+
+
+
+	<scene name="scene_16_gavanhdaiba" title="Ga Vành Đai 3" onstart="" thumburl="panos/16_gavanhdaiba.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-87.790" vlookat="-2.561" fovtype="MFOV" fov="127.818" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/16_gavanhdaiba.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/16_gavanhdaiba.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-125.044" atv="8.56" distorted="false" zoom="false" linkedscene="scene_17_quayve_vanhdaiba" />
+		<hotspot name="spot2" style="Iconcallout_top" ath="8.264" atv="-21.661" distorted="false" zoom="false" content="Tòa nhà Hoàng Huy" />
+		<hotspot name="spot3" style="Iconcallout_top" ath="-4.892" atv="-4.233" distorted="false" zoom="false" content="Khu đô thị Royal City" />
+
+	</scene>
+
+	<scene name="scene_17_quayve_vanhdaiba" title="Khu soát vé Vành Đai 3" onstart="" thumburl="panos/17_quayve_vanhdaiba.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-0.965" vlookat="0.715" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/17_quayve_vanhdaiba.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/17_quayve_vanhdaiba.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot2" style="skin_hotspotstyle_move" ath="-26.390" atv="8.083" distorted="false" zoom="false" linkedscene="scene_19_huongsanhyennghia_vanhdaiba" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="90.371" atv="9.577" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot1" style="skin_hotspotstyle_info" ath="-129.867" atv="12.107"  distorted="false" zoom="false" onhover="Thông tin Máy mua vé tự động" onclick="js(showform('Máy mua vé tự động',' Đây là khu vực máy bán vé tự động, dành cho khách hàng đi theo lượt. Giá vé tàu Cát Linh được tính theo quãng đường di chuyển của hành khách, trong đó tối đa 15.000 đồng/lượt nếu đi toàn tuyến và thấp nhất là 8.000 đồng với quãng ngắn nhất.'))" />
+		<hotspot name="spot5" style="skin_hotspotstyle_info" ath="55.642" atv="5.308"  distorted="false" zoom="false" onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))" />
+		<hotspot name="spot6" style="skin_hotspotstyle_info"  ath="-54.760" atv="4.094" distorted="false" zoom="false" onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))" />
+		<hotspot name="spot4" style="skin_hotspotstyle_move" ath="27.286" atv="8.955" distorted="false" zoom="false" linkedscene="scene_18_huonglensanhtau_vanhdaiba" />
+		
+	</scene>
+
+	<scene name="scene_19_huongsanhyennghia_vanhdaiba" title="Lối lên sảnh đi Yên nghĩa vành Đai 3" onstart="" thumburl="panos/19_huongsanhyennghia_vanhdaiba.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="1.505" vlookat="-2.510" fovtype="MFOV" fov="111.457" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/19_huongsanhyennghia_vanhdaiba.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/19_huongsanhyennghia_vanhdaiba.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev" ath="153.670" atv="13.053" distorted="false" zoom="false" linkedscene="scene_17_quayve_vanhdaiba" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move"   ath="-0.317" atv="-2.316" distorted="false" zoom="false" linkedscene="scene_21_khuchotau_vanhdaiba" />
+		<hotspot name="spot4" style="skin_hotspotstyle_move" ath="92.539" atv="5.663" distorted="false" zoom="false" linkedscene="scene_18_huonglensanhtau_vanhdaiba" />
+		
+
+	</scene>
+	<scene name="scene_18_huonglensanhtau_vanhdaiba" title="Lối lên sảnh đi Cát Linh Vành Đai 3" onstart="" thumburl="panos/18_huonglensanhtau_vanhdaiba.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-1.425" vlookat="-7.533" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/18_huonglensanhtau_vanhdaiba.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/18_huonglensanhtau_vanhdaiba.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-0.032" atv="-2.910" distorted="false" zoom="false" linkedscene="scene_21_khuchotau_vanhdaiba" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move" ath="-90.456" atv="7.851" distorted="false" zoom="false" linkedscene="scene_19_huongsanhyennghia_vanhdaiba" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-151.995" atv="14.014" distorted="false" zoom="false" linkedscene="scene_17_quayve_vanhdaiba" />
+		
+	</scene>
+
+	
+
+	<scene name="scene_21_khuchotau_vanhdaiba" title="Sảnh chờ tàu ga Vành Đai 3" onstart="" thumburl="panos/21_khuchotau_vanhdaiba.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-32.830" vlookat="6.267" fovtype="MFOV" fov="134.973" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/21_khuchotau_vanhdaiba.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/21_khuchotau_vanhdaiba.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev"  ath="110.493" atv="18.128" distorted="false" zoom="false" linkedscene="scene_17_quayve_vanhdaiba" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="84.585" atv="-1.114" distorted="false" zoom="false" linkedscene="scene_22_gayennghia" />
+		<hotspot name="spot3" style="skin_hotspotstyle" ath="-88.652" atv="-0.826" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+		<hotspot name="spot4" style="skin_hotspotstyle_move"  ath="1.928" atv="29.847"  distorted="false" zoom="false" linkedscene="scene_34_bentrongtau_vanhdaiba" />
+	
+	</scene>
+
+	<scene name="scene_34_bentrongtau_vanhdaiba" title="Lên tàu Vành Đai Ba" onstart="" thumburl="panos/34_bentrongtau_vanhdaiba.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-33.599" vlookat="6.330" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/34_bentrongtau_vanhdaiba.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/34_bentrongtau_vanhdaiba.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle" ath="0.215" atv="1.060" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="179.061" atv="0.290" distorted="false" zoom="false" linkedscene="scene_22_gayennghia" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-33.942" atv="25.352" distorted="false" zoom="false" linkedscene="scene_21_khuchotau_vanhdaiba" />
+		<hotspot name="spot4" style="skin_hotspotstyle_move_prev" ath="-150.598" atv="23.603" distorted="false" zoom="false" linkedscene="scene_21_khuchotau_vanhdaiba" />
+		
+		
+	</scene>
+
+
+	<scene name="scene_10_gathuongdinh" title="Ga Thượng Đình" onstart="" thumburl="panos/10_gathuongdinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-75.345" vlookat="-1.601" fovtype="MFOV" fov="127.912" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/10_gathuongdinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/10_gathuongdinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-118.879" atv="9.632" distorted="false" zoom="false" linkedscene="scene_11_quayvetudong_thuongdinh" />
+		<hotspot name="spot2" style="Iconcallout_top" ath="-16.525" atv="-15.625" distorted="false" zoom="false" content="Khu đô thị Royal City"/>
+		<hotspot name="spot3" style="Iconcallout_top"  ath="115.748" atv="-5.661"  distorted="false" zoom="false" content="Star Tower Khương Trung"/>
+		
+
+	</scene>
+
+	<scene name="scene_11_quayvetudong_thuongdinh" title="Khu soát vé ga Thượng Đình" onstart="" thumburl="panos/11_quayvetudong_thuongdinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-2.467" vlookat="-5.880" fovtype="MFOV" fov="115.833" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/11_quayvetudong_thuongdinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/11_quayvetudong_thuongdinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev" ath="-91.333" atv="7.372" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move"  ath="24.596" atv="8.798" distorted="false" zoom="false" linkedscene="scene_13_huonglensanhtau_thuongdinh" />
+		<hotspot name="spot3" style="skin_hotspotstyle_info" ath="-130.595" atv="13.014" distorted="false" zoom="false" onhover="Thông tin Máy mua vé tự động" onclick="js(showform('Máy Mua Vé Tự Động',' Đây là khu vực máy bán vé tự động, dành cho khách hàng đi theo lượt. Giá vé tàu Cát Linh được tính theo quãng đường di chuyển của hành khách, trong đó tối đa 15.000 đồng/lượt nếu đi toàn tuyến và thấp nhất là 8.000 đồng với quãng ngắn nhất.'))"  />
+		<hotspot name="spot4" style="skin_hotspotstyle_info" ath="53.610" atv="5.662" distorted="false" zoom="false"  onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))" />
+		<hotspot name="spot5" style="skin_hotspotstyle_info" ath="-56.348" atv="4.116" distorted="false" zoom="false"  onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))" />
+
+	</scene>
+
+	
+
+	<scene name="scene_13_huonglensanhtau_thuongdinh" title="Lối lên/xuống sảnh tàu Thượng Đình" onstart="" thumburl="panos/13_huonglensanhtau_thuongdinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-2.584" vlookat="-6.478" fovtype="MFOV" fov="106.950" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/13_huonglensanhtau_thuongdinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/13_huonglensanhtau_thuongdinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-0.439" atv="-5.453" distorted="false" zoom="false" linkedscene="scene_15_sanhchotau_thuongdinh" />
+	
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-143.150" atv="17.189" distorted="false" zoom="false" linkedscene="scene_11_quayvetudong_thuongdinh" />
+		
+
+	</scene>
+
+	
+
+	<scene name="scene_15_sanhchotau_thuongdinh" title="Sảnh chờ tàu Thượng Đình" onstart="" thumburl="panos/15_sanhchotau_thuongdinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-26.636" vlookat="6.930" fovtype="MFOV" fov="131.538" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/15_sanhchotau_thuongdinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/15_sanhchotau_thuongdinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev" ath="-121.047" atv="17.696" distorted="false" zoom="false" linkedscene="scene_13_huonglensanhtau_thuongdinh" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="86.655" atv="-0.459" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot3" style="skin_hotspotstyle" ath="-87.125" atv="-0.528" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
+		<hotspot name="spot4" style="skin_hotspotstyle_move" ath="1.648" atv="36.751" distorted="false" zoom="false" linkedscene="scene_35_bentrongtau_thuongdinh" />
+		
+
+	</scene>
+	<scene name="scene_35_bentrongtau_thuongdinh" title="Lên tàu ga Thượng Đình" onstart="" thumburl="panos/35_bentrongtau_thuongdinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-30.183" vlookat="8.995" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/35_bentrongtau_thuongdinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/35_bentrongtau_thuongdinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle" ath="0.731" atv="1.299" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="178.980" atv="0.383" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-33.407" atv="25.890" distorted="false" zoom="false" linkedscene="scene_15_sanhchotau_thuongdinh" />
+		<hotspot name="spot4" style="skin_hotspotstyle_move_prev" ath="-149.921" atv="23.051" distorted="false" zoom="false" linkedscene="scene_15_sanhchotau_thuongdinh" />
+		
+		
+	</scene>
+
+
+
+
+	<scene name="scene_1_gacatlinh" title="Ga Cát Linh" onstart="" thumburl="panos/1_gacatlinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="1.183" vlookat="-8.774" fovtype="MFOV" fov="123.273" maxpixelzoom="2.0"  limitview="range"
+		fovmin="calc:booth_setting ? calc(booth_setting.fovmin) : 70"
+        fovmax="calc:booth_setting ? calc(booth_setting.fovmax) : 140"
+		hlookatmin="calc:booth_setting ? calc(booth_setting.hlookatmin) : -100"
+        hlookatmax="calc:booth_setting ? calc(booth_setting.hlookatmax) : +100"
+        vlookatmin="calc:booth_setting ? calc(booth_setting.vlookatmin) : -180"
+        vlookatmax="calc:booth_setting ? calc(booth_setting.vlookatmax) : +180" 
+		/>
+		<preview url="panos/1_gacatlinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_gacatlinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="29.966" atv="7.415" distorted="false" zoom="false" linkedscene="scene_2_cuagacatlinh" />
+		
+		
+
+	</scene>
+
+	<scene name="scene_2_cuagacatlinh" title="Cửa vào ga Cát Linh" onstart="" thumburl="panos/2_cuagacatlinh.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-361.347" vlookat="2.909" fovtype="MFOV" fov="97.683" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/2_cuagacatlinh.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/2_cuagacatlinh.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-9.996" atv="-3.004" distorted="false" zoom="false" linkedscene="scene_3_quaybanvetudong" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev"  ath="-161.772" atv="11.663" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
+		
+
+	</scene>
+
+	<scene name="scene_3_quaybanvetudong" title="Quầy bán vé tự động ga Cát Linh" onstart="" thumburl="panos/3_quaybanvetudong.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="4.713" vlookat="3.289" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/3_quaybanvetudong.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/3_quaybanvetudong.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev" ath="-68.208" atv="13.871" distorted="false" zoom="false" linkedscene="scene_2_cuagacatlinh" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move" ath="4.818" atv="13.670" distorted="false" zoom="false" linkedscene="scene_4_quayve" />
+		<hotspot name="spot3" style="skin_hotspotstyle_info" ath="-166.434" atv="14.849" distorted="false" zoom="false" onhover="Thông tin Máy mua vé tự động" onclick="js(showform('Máy Mua vé tự động','Đây là khu vực máy bán vé tự động, dành cho khách hàng đi theo lượt. Giá vé tàu Cát Linh được tính theo quãng đường di chuyển của hành khách, trong đó tối đa 15.000 đồng/lượt nếu đi toàn tuyến và thấp nhất là 8.000 đồng với quãng ngắn nhất.'))" />
+
+	</scene>
+
+	<scene name="scene_4_quayve" title="Quầy bán vé ga Cát Linh" onstart="" thumburl="panos/4_quayve.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-3.444" vlookat="3.555" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/4_quayve.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/4_quayve.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-90.099" atv="9.889"  distorted="false" zoom="false" linkedscene="scene_5_khukiemtrave" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev" ath="108.253" atv="10.287" distorted="false" zoom="false" linkedscene="scene_3_quaybanvetudong" />
+		<hotspot name="spot3" style="skin_hotspotstyle_info"  ath="-7.791" atv="9.797"  distorted="false" zoom="false" onhover="Thông tin về Quầy bán vé " onclick="js(showform('Quầy Bán Vé - Thông tin',' Đây là khu vực quầy bán vé dành cho khách hàng mua vé đi theo ngày, vé đi theo tháng'))" />
+		
+
+	</scene>
+
+	<scene name="scene_5_khukiemtrave" title="Khu soát vé ga Cát Linh" onstart="" thumburl="panos/5_khukiemtrave.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-359.081" vlookat="3.678" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/5_khukiemtrave.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/5_khukiemtrave.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev" ath="91.177" atv="12.031" distorted="false" zoom="false" linkedscene="scene_4_quayve" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move" ath="-2.974" atv="17.925" distorted="false" zoom="false" linkedscene="scene_6_huonglesanhtau" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-178.634" atv="7.437" distorted="false" zoom="false" linkedscene="scene_3_quaybanvetudong" />
+		
+
+	</scene>
+
+	<scene name="scene_6_huonglesanhtau" title="Lối lên/xuống sảnh tàu ga Cát Linh" onstart="" thumburl="panos/6_huonglesanhtau.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="361.521" vlookat="5.816" fovtype="MFOV" fov="123.999" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/6_huonglesanhtau.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/6_huonglesanhtau.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="0.074" atv="1.578" distorted="false" zoom="false" linkedscene="scene_8_sanhchotau" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev" ath="-163.423" atv="11.942" distorted="false" zoom="false" linkedscene="scene_5_khukiemtrave" />
+		
+	</scene>
+
+	
+	
+
+	<scene name="scene_8_sanhchotau" title="Sảnh chờ tàu ga Cát Linh" onstart="" thumburl="panos/8_sanhchotau.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="6.650" vlookat="3.517" fovtype="MFOV" fov="127.912" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/8_sanhchotau.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/8_sanhchotau.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move" ath="-3.195" atv="16.541" distorted="false" zoom="false" linkedscene="scene_9_bentrongtau" />
+		<hotspot name="spot2" style="skin_hotspotstyle_move_prev" ath="95.48" atv="19.55"  distorted="false" zoom="false" linkedscene="scene_6_huonglesanhtau" />
+		<hotspot name="spot3" style="skin_hotspotstyle"  ath="-79.734" atv="-2.421" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+
+	</scene>
+
+	<scene name="scene_9_bentrongtau" title="Bên trong tàu điện ga Cát Linh" onstart="" thumburl="panos/9_bentrongtau.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-33.218" vlookat="2.719" fovtype="MFOV" fov="123.999" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/9_bentrongtau.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/9_bentrongtau.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle_move_prev" ath="-150.628" atv="23.751" distorted="false" zoom="false" linkedscene="scene_8_sanhchotau" />
+		<hotspot name="spot3" style="skin_hotspotstyle_move_prev" ath="-33.486" atv="26.841" distorted="false" zoom="false" linkedscene="scene_8_sanhchotau" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="0.713" atv="0.916" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+		
+
+	</scene>
+
+
+
+
+	
+
+	<scene name="scene_27_hoangcau" title="Hồ Hoàng Cầu" onstart="" thumburl="panos/27_hoangcau.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="-19.358" vlookat="-6.623" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/27_hoangcau.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/27_hoangcau.tiles/pano_%s.jpg" />
+		</image>
+		
+			<hotspot name="spot1" style="Iconcallout_top"  ath="27.416" atv="-4.941" distorted="false" zoom="false" content="Hướng đi Yên Nghĩa" />
+			<hotspot name="spot4" style="skin_hotspotstyle"  ath="27.381" atv="-4.179" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+				<hotspot name="spot5" style="skin_hotspotstyle"  ath="-66.487" atv="-17.768" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
+			<hotspot name="spot2" style="Iconcallout_top"   ath="-66.706" atv="-19.150"  distorted="false" zoom="false" content="Hướng đi Cát Linh" />
+			<hotspot name="spot3" style="Iconcallout_top"  ath="54.964" atv="3.742"  distorted="false" zoom="false" content="Hồ Hoàng cầu" />
+		
+	</scene>
+
+	<scene name="scene_28_cauvuot_royal_108nguyentrai" title="Cầu vượt Thượng Đình" onstart="" thumburl="panos/28_cauvuot_royal_108nguyentrai.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="34.572" vlookat="-5.544" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/28_cauvuot_royal_108nguyentrai.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/28_cauvuot_royal_108nguyentrai.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle"   ath="172.332" atv="-2.919" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+		<hotspot name="spot2" style="Iconcallout_top"    ath="-10.254" atv="-3.868" distorted="false" zoom="false" content="Hướng đi Cát Linh" />
+		<hotspot name="spot3" style="Iconcallout_top"  ath="-58.054" atv="-28.116" distorted="false" zoom="false" content="Khu đô thị Royal City" />
+		<hotspot name="spot4" style="Iconcallout_top"  ath="169.196" atv="-7.291" distorted="false" zoom="false" content="Tòa nhà Hoàng Huy" />
+		<hotspot name="spot5" style="skin_hotspotstyle"   ath="5.69" atv="-8.214" distorted="false" zoom="false" linkedscene="scene_33_taudangditrencau" />
+		<hotspot name="spot6" style="skin_hotspotstyle"   ath="-10.157" atv="-3.398" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
+		
+	</scene>
+
+	<scene name="scene_29_cauvuot_252nguyentrai" title="Cầu vượt Đại Học Hà Nội " onstart="" thumburl="panos/29_cauvuot_252nguyentrai.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="38.406" vlookat="-3.103" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/29_cauvuot_252nguyentrai.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/29_cauvuot_252nguyentrai.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle"  ath="-89.328" atv="-2.763" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot2" style="Iconcallout_top"   ath="87.537" atv="-4.678" distorted="false" zoom="false" content="Hướng Đi ga Yên Nghĩa" />
+		<hotspot name="spot3" style="Iconcallout_top"   ath="64.250" atv="-14.042" distorted="false" zoom="false" content="Chung cư PCC1 Complex" />
+		<hotspot name="spot4" style="Iconcallout_top"   ath="-86.733" atv="-7.462" distorted="false" zoom="false" content="Tòa nhà Hoàng Huy" />
+		<hotspot name="spot5" style="skin_hotspotstyle"  ath="88.047" atv="-2.307" distorted="false" zoom="false" linkedscene="scene_22_gayennghia" />
+		
+	</scene>
+
+	<scene name="scene_30_cauvuot_bachhoathanhxuan" title=" Cầu vượt Bách Hóa Thanh Xuân" onstart="" thumburl="panos/30_cauvuot_bachhoathanhxuan.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="32.517" vlookat="0.481" fovtype="MFOV" fov="127.865" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/30_cauvuot_bachhoathanhxuan.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/30_cauvuot_bachhoathanhxuan.tiles/pano_%s.jpg" />
+		</image>
+
+		<hotspot name="spot1" style="Iconcallout_top" ath="168.778" atv="-4.795" distorted="false" zoom="false" content="Hướng đi Yên Nghĩa " />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="-7.589" atv="-4.589" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot3" style="Iconcallout_top" ath="-11.409" atv="-5.443" distorted="false" zoom="false" content="Royal City" />
+		<hotspot name="spot4" style="Iconcallout_top" ath="-129.230" atv="-26.435" distorted="false" zoom="false" content="Bách Hóa Thanh Xuân" />
+		<hotspot name="spot5" style="Iconcallout_top" ath="-3.277" atv="-12.399" distorted="false" zoom="false" content="Tòa nhà Hoàng Huy" />
+		<hotspot name="spot6" style="skin_hotspotstyle"   ath="168.668" atv="-3.541" distorted="false" zoom="false" linkedscene="scene_22_gayennghia" />
+		
+	</scene>
+
+	<scene name="scene_31_cauvuot_549nguyentrai" title="Cầu vượt co.opmart Hà Đông" onstart="" thumburl="panos/31_cauvuot_549nguyentrai.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="223.682" vlookat="-5.434" fovtype="MFOV" fov="138.253" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/31_cauvuot_549nguyentrai.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/31_cauvuot_549nguyentrai.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="Iconcallout_top"  ath="-90.822" atv="-3.167" distorted="false" zoom="false" content="Hướng đi Yên Nghĩa" />
+		<hotspot name="spot6" style="skin_hotspotstyle"   ath="-90.723" atv="-2.129" distorted="false" zoom="false" linkedscene="scene_22_gayennghia" />
+		<hotspot name="spot2" style="Iconcallout_top" ath="93.695" atv="-9.476" distorted="false" zoom="false" content="Hướng đi Cát Linh" />
+		<hotspot name="spot7" style="skin_hotspotstyle"   ath="92.911" atv="-7.823" distorted="false" zoom="false" linkedscene="scene_16_gavanhdaiba" />
+		<hotspot name="spot3" style="Iconcallout_top" ath="0.226" atv="-16.697" distorted="false" zoom="false" content="Tòa Co.opmart" />
+		<hotspot name="spot4" style="Iconcallout_top" ath="178.803" atv="0.522" distorted="false" zoom="false" content="Học Viện Cảnh Sát Nhân Dân" />
+		<hotspot name="spot5" style="Iconcallout_top" ath="-86.273" atv="-11.364" distorted="false" zoom="false" content="Tòa nhà Hồ Gươm Plaza" />
+		
+	</scene>
+	<scene name="scene_33_taudangditrencau" title="Trong tàu" onstart="" thumburl="panos/33_taudangditrencau.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="337.647" vlookat="10.252" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/33_taudangditrencau.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/33_taudangditrencau.tiles/pano_%s.jpg" />
+		</image>
+		<hotspot name="spot1" style="skin_hotspotstyle"   ath="179.107" atv="0.560" distorted="false" zoom="false" linkedscene="scene_1_gacatlinh" />
+		<hotspot name="spot2" style="skin_hotspotstyle"    ath="0.714" atv="-0.222" distorted="false" zoom="false" linkedscene="scene_10_gathuongdinh" />
+		
+	</scene>
+	
+</krpano>
+

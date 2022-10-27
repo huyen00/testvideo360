@@ -1,0 +1,560 @@
+<krpano>
+
+	<!-- <include url="%VIEWER%/plugins/iphone_fullscreen_swipe.xml" /> -->
+
+
+	<!-- <view hlookat="0" vlookat="0" fov="90" fovtype="MFOV" />
+
+	<preview url="../custom-contextmenu/preview.jpg" />
+	<image>
+		<cube url="../custom-contextmenu/mobile_%s.jpg" />
+	</image> -->
+
+
+	<plugin name="pp_blur" keep="true"
+		url="%VIEWER%/plugins/pp_blur.js"
+		enabled="true"
+		range="0.0"
+		linearrgb="false"
+		order="1"
+		phase="2"
+		/>
+
+
+	<style name="infospot"
+		type="text"
+		css="color:#000000; font-size:16px; font-weight:bold; text-align:center;"
+		width="80" height="80"
+		bgroundedge="42"
+		bgalpha="0.75"
+		bgcolor="0x000000"
+		bgborder="1 0xFFFFFF 1"
+		bgshadow="0 0 16 0x0 0.5"
+		txtshadow="0 0 3 0x0 1.0"
+		mergedalpha="false"
+		vcenter="true"
+		oversampling="2"
+		mipmapping="true"
+		zoom="true"
+		capture="false"
+		/>
+
+
+	<action name="circlepos" scope="localonly" args="pos, total">
+		calc(caller.ox, -100 * cos((pos-1)/total * Math.PI * 2.0) );
+		calc(caller.oy, -100 * sin((pos-1)/total * Math.PI * 2.0) );
+	</action>
+
+
+	<!-- <hotspot name="spot1" style="infospot"
+		html="HTML"
+		ath="0" atv="0"
+		onloaded="circlepos(1,6);"
+		onclick="popup('html', get(data[data_html_example].content), 600, 300, true);"
+		/> -->
+
+
+
+    <action name="debugcode" args="type, content, width, height, scrollbars, src_url">
+        showlog();
+        trace(%6);
+    </action>
+
+	<action name="popup" scope="private:POPUP" args="type, content, width, height, scrollbars, src_url, title_iframe, id_product"><![CDATA[
+		if(popup, break(); );
+       
+		addlayer('popup_bg', popup_bg);
+		set(popup_bg,
+			type=container,
+			align=lefttop, width=100%, height=100%,
+			zorder=99,
+			handcursor=false,
+			bgcapture=true,
+			capture=false,
+			
+			//bgcolor=0x123456, onloaded='tween(bgalpha,0.3,1.0);',	// optional: colorize the background
+			ondown='popup_close()'
+		);
+
+
+		addlayer('popup', popup);
+		set(popup,
+			type=container,
+			parent='popup_bg',
+			//width=calc(min(width,global.stagewidth*0.9)),
+			//height=calc(min(height,global.stageheight*0.8)),
+             width=40%, height=45%,
+			align=center,
+			padding=20,
+			bgborder='1 0x363636 1',
+			bgcolor=0x363636,
+			bgalpha=0.7,
+			bgshadow='0 10 20 0x000000 0.5',
+			bgcapture=true,
+			maskchildren=false,
+			capture=true,
+			handcursor=false,
+			alpha=0,
+			overflow=hidden,
+		);
+
+
+		// optional: add a close button
+		addlayer('popup_close_x', closex);
+		set(closex,
+			url='skin/btn_x.png',
+			parent='popup',
+			align=righttop,
+			edge=center,
+			scale=0.5,
+			zorder=99,
+			alpha=0.6,
+			onover='tween(alpha,1)',
+			onout='tween(alpha,0.25)',
+			ondown='tween(alpha,1)',
+			onup='tween(alpha,0.25)',
+			onclick='popup_close();'
+		);
+
+
+		if(type == 'html',
+			copy(popup.datacontent, content);
+			calc(popup.onloaded, 'add_html_code(get(datacontent),'+scrollbars+','+src_url+','+title_iframe+','+id_product+');');
+
+		  ,type == 'iframe',
+			calc(popup.datacontent, '<iframe style="position:absolute;width:100%;height:100%;top:0px;left:0px;" src="'+content+'" frameborder="0" allowfullscreen></iframe>');
+			calc(popup.onloaded, 'add_html_code(get(datacontent),'+scrollbars+');');
+
+		  ,type == 'image',
+		 	set(popup,
+		 		bgcolor=0xFFFFFF,
+		 		bgalpha=1,
+		 	);
+			addlayer("popup_image", img);
+			set(img,
+				url=get(content),
+				align=center,
+				width=-20, height=-20,
+				parent=get(popup.name),
+				onloaded='popup_imageloaded()'
+			);
+		);
+
+		tween(global.plugin[pp_blur].range, 40.0);
+		delayedcall(0.2, tween(global.layer[popup].alpha, 1.0); );
+
+		set(global.events[popup].onclick, popup_close() );
+		set(global.events[popup].onremovepano, popup_close() );
+	]]></action>
+
+
+	<action name="popup_close">
+		set(global.plugin[popup_bg].enabled, false);
+		set(global.events[popup].name, null);
+		tween(global.plugin[pp_blur].range, 0.0);
+		tween(global.layer[popup_bg].bgalpha, 0.0, 0.25);
+		tween(global.layer[popup].alpha, 0.0, 0.25, default,
+			removelayer('popup_bg', true);
+			scope(private:POPUP, delete(popup); );
+		);
+		<!-- pausesound(bgsound); -->
+		 <!-- playsound(bgsound, assets/bgsound.mp3, true, 0.8); -->
+	</action>
+
+
+	<action name="popup_imageloaded" scope="private:POPUP">
+		calc(imgw, caller.imagewidth + 20);
+		calc(imgh, caller.imageheight + 20);
+		calc(maxw, global.stagewidth*0.8);
+		calc(maxh, global.stageheight*0.7);
+		if(imgw GT maxw,
+			calc(imgh, round(imgh * maxw / imgw));
+			copy(imgw, maxw);
+		);
+		if(imgh GT maxh,
+			calc(imgw, round(imgw * maxh / imgh));
+			copy(imgh, maxh);
+		);
+
+		set(global.layer[get(caller.parent)], width=get(imgw), height=get(imgh) );
+	</action>
+
+
+
+	<!-- arguments: 1=htmlcode, 2=scrollbars -->
+	<data name="data_html_example"><![CDATA[
+
+		<div  style="padding:10px; color:black; overflow:hidden">
+			<div class="header_info" >
+				<h2 class=" title_info"  >Thông Tin về  Trà Loại 1</h2>
+
+				
+			</div>
+			
+			<div class="content_info">
+				<span>
+					Sản phẩm trà loại 1 là sản phẩm cao cấp nhất...
+					<br>
+					- ...
+					<br>
+
+					- ...
+					<br>
+					- ...
+					<br>
+					( Thêm hình ảnh sp + chứng chỉ sản phẩm nhận được )
+				</span>
+			</div>
+			<div class="footer_info" >
+				<div class="footer_cart">
+					<a href="https://voso.vn/" style=" background:#ff9900; padding:0.7rem;border-radius:10px;color:black;text-decoration: none;" target="_blank"> Thêm giỏ hàng 
+						<i class="fas fa-cart-arrow-down"></i>
+					</a>
+				</div>
+				<div class="footer_image">
+					<p class=""> Hình ảnh
+						<i class="fa-solid fa-image"></i>
+					</p>
+				</div>
+			</div>
+			
+		</div>
+
+	]]></data>
+	<data name="data_html_example2"><![CDATA[
+
+		<div  style="padding:10px; color:black; overflow:hidden">
+			<div class="header_info" >
+				<h2 class=" title_info"  >Thông Tin về  Trà Loại 2</h2>
+				<div class="cart_info" style=" " >
+					<a href="https://voso.vn/" style=" background:#ff9900; padding:0.7rem;border-radius:10px;color:black;text-decoration: none;" target="_blank"> Thêm giỏ hàng 
+						<i class="fas fa-cart-arrow-down"></i>
+					</a>
+				</div>
+			</div>
+			
+			<hr style="border:0;border-top:1px solid white;">
+			
+			<div class="content_info" >
+				<div class="content_img_info" >
+					<img src="assets/img/tra.jpg" class="img-fluid "  alt="">
+				</div>
+				<span >
+					Theo nghiên cứu khoa học hiện đại, Trà hoa vàng là loài dược liệu rất quý, trở có chứa hơn 400 hoạt chất và trong đó quý giá là các saponin, tea polyphenol và các nguyên tố như Selenium (Se), Germannium (Ge), Kalium (K) Kẽm (Zn), Molypden (Mo), Vanadium (V), Mangan (Mn) và các vitamin B1, B2, C.
+					Trà Hoa Vàng được giới y học nghiên cứu rất nhiều và đã được ứng dụng trên nhiều quốc gia như Mỹ,Trung Quốc, Pháp, Nhật Bản, Việt Nam ... Nước sắc lá trà có tác dụng hạ huyết áp rõ ràng và tác dụng được duy trì trong thời gian tương đối dài.
+
+					Trong lá trà có những hoạt chất làm giảm tổng hàm lượng lipit trong huyết thanh máu, giảm lượng cholesterol mật độ thấp (cholesterol xấu) và tăng lượng cholesterol mật độ cao (cholesterol tốt).
+					Nước sắc lá trà có tác dụng ức chế sự tụ tập của tiểu cầu, chống sự hình thành huyết khối gây tắc nghẽn mạch máu.
+
+					Phòng ngừa ung bướu và ức chế sự phát triển của các khối u khác.
+					Giải độc gan và thận, ngăn ngừa xơ vữa động mạnh máu.
+					Ức chế và tiêu diệt vi khuẩn.
+
+					Ngoài ra, lá chè còn có tác dụng chống viêm, chống dị ứng và duy trì trạng thái bình thường của tuyến giáp.
+					Cây Trà Hoa Vàng ngày nay rất được nhiều người ưa chuộng trồng để làm cảnh và dùng làm trà như một loại thảo dược dùng để dưỡng sinh.
+				</span>
+			</div>
+			
+		</div>
+
+	]]></data>
+	<data name="data_html_example3"><![CDATA[
+
+		<div  style="padding:10px; color:black; overflow:hidden">
+			<div class="header_info" >
+				<h2 class=" title_info"  >Thông Tin về  Trà Loại 3</h2>
+				<div class="cart_info" style=" " >
+					<a href="https://voso.vn/" style=" background:#ff9900; padding:0.7rem;border-radius:10px;color:black;text-decoration: none;" target="_blank"> Thêm giỏ hàng 
+						<i class="fas fa-cart-arrow-down"></i>
+					</a>
+				</div>
+			</div>
+			
+			<hr style="border:0;border-top:1px solid white;">
+			
+			<div class="content_info" >
+				<div class="content_img_info" >
+					<img src="assets/img/tra.jpg" class="img-fluid "  alt="">
+				</div>
+				<span >
+					Theo nghiên cứu khoa học hiện đại, Trà hoa vàng là loài dược liệu rất quý, trở có chứa hơn 400 hoạt chất và trong đó quý giá là các saponin, tea polyphenol và các nguyên tố như Selenium (Se), Germannium (Ge), Kalium (K) Kẽm (Zn), Molypden (Mo), Vanadium (V), Mangan (Mn) và các vitamin B1, B2, C.
+					Trà Hoa Vàng được giới y học nghiên cứu rất nhiều và đã được ứng dụng trên nhiều quốc gia như Mỹ,Trung Quốc, Pháp, Nhật Bản, Việt Nam ... Nước sắc lá trà có tác dụng hạ huyết áp rõ ràng và tác dụng được duy trì trong thời gian tương đối dài.
+
+					Trong lá trà có những hoạt chất làm giảm tổng hàm lượng lipit trong huyết thanh máu, giảm lượng cholesterol mật độ thấp (cholesterol xấu) và tăng lượng cholesterol mật độ cao (cholesterol tốt).
+					Nước sắc lá trà có tác dụng ức chế sự tụ tập của tiểu cầu, chống sự hình thành huyết khối gây tắc nghẽn mạch máu.
+
+					Phòng ngừa ung bướu và ức chế sự phát triển của các khối u khác.
+					Giải độc gan và thận, ngăn ngừa xơ vữa động mạnh máu.
+					Ức chế và tiêu diệt vi khuẩn.
+
+					Ngoài ra, lá chè còn có tác dụng chống viêm, chống dị ứng và duy trì trạng thái bình thường của tuyến giáp.
+					Cây Trà Hoa Vàng ngày nay rất được nhiều người ưa chuộng trồng để làm cảnh và dùng làm trà như một loại thảo dược dùng để dưỡng sinh.
+				</span>
+			</div>
+			
+		</div>
+
+	]]></data>
+	<data name="data_html_example_kho"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông Tin Nhà Kho</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<span>
+			</span>
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_A"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông Tin Khu Nguyên Liệu A</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span class="text_thongtin">
+				Là khu nguyên liệu đã thu hoạch ổn định (3-5 năm tuổi, ngoài ra có các khu vực đang phát triển cây con độ tuổi 1,5 - 2,5 năm tuổi).
+				Diện tích khoảng 10ha
+				</span>
+			</div>
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_nhathumua"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông Tin Nhà thu mua</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span class="text_thongtin">
+				Nhà ở của chủ cơ sở kinh doanh kèm chắc năng thu mua nguyên liệu của thành viên HTX cũng như nhân dân quanh vùng
+				</span>
+			</div>
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_B"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông Tin Khu Nguyên Liệu B</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span class="text_thongtin">
+				Là khu mới phát triển (gốm nhiều cây con có độ tuổi dưới 1 năm tới 2 năm tuổi), đây là khu nguyên liệu của thành viên HTX,
+				 mà trong đó thành viên được hỗ trợ giống, kỹ thuật, bao tiêu thu mua... tạo vùng nguyên liệu ổn định lâu dài cũng như tạo công ăn việc làm cho nhân dân địa phương.
+				 Diện tích khoảng 6ha.
+				</span>
+			</div>
+			
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_khusxDL"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông Tin Khu Nhà trưng bày sản phẩm</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span class=" text_thongtin">
+					Khu tổ hợp nhà trưng bày sản phẩm gồm khu trưng bày, khu xưởng sấy, kho và tiếp giáp khu vườn ươm.
+					Đây là điểm giới thiệu và bán sản phẩm OCOP thứ 3/5 điểm giới thiệu và bán sản phẩm OCOP trên địa bàn tỉnh được hỗ trợ theo QĐ 1656/QĐ-UBND ngày 19 tháng 8 năm 2020 của UBND tỉnh đã khai trương và đi vào hoạt động
+				</span>
+			</div>
+			
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_caylaunam"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông tin Khu cây giống lâu năm</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span>
+					Khu gồm cây trà mẹ, lâu năm tuổi ( cây 10 -20 năm tuổi ) vừa cung cấp hoa vừa cung cấp quả, hạt giống cũng như phôi chiết.Khu cây lâu năm tuổi kết hợp một số khu vực khu nguyên liệu A
+					là nguồn cung cấp chính cây con cho cả khả vực nguyên liệu xung quanh khác.
+				</span>
+			</div>
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_sx"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Quy Trình Máy sấy Trà</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem; line-height:1.6">
+				<span>
+					<b>•	Máy Sấy Lạnh:  </b>Sấy lạnh là phương pháp sấy bằng tác nhân là không khí rất khô ở nhiệt độ thấp hơn nhiệt độ sấy thông thường. Dải nhiệt độ sấy từ 35-600C, độ ẩm không khí sấy vào khoảng 10-30%. Quá trình sấy được tiến hành ở áp suất khí quyển. Máy sấy lạnh được cấu thành bởi một máy bơm nhiệt được đặt trong một tủ sấy hoặc một hầm sấy tùy theo quy mô. Máy bơm nhiệt có một đầu nóng và một đầu lạnh. Đầu nóng sẽ cung cấp nhiệt lượng cho tác nhân sấy, còn đầu lạnh dùng để tách ẩm cho không khí sấy. Do đó, máy sấy lạnh còn gọi là máy sấy bơm nhiệt.
+					<br>
+					<b>•	Sấy thăng hoa hay sấy đông khô: </b>Đây là phương pháp sấy ưu việt nhất trong tất cả phương pháp sấy hiện nay. Sấy thăng hoa (freeze drying) là một kỹ thuật còn được gọi là “làm khô lạnh”. Trong đó sản phẩm được sấy khô qua quá trình thăng hoa của nước dưới nhiệt độ và áp suất thấp. Nước trong sản phẩm được đông lạnh thành đá sau đó được loại bỏ trực tiếp ra khỏi sản phẩm bằng cách hóa hơi. Điều này được thực hiện trong môi trường chân không.
+				</span>
+			</div>
+			
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_A1"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông tin khu nguyên liêu A</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span>
+					<b>Tên cây trà: </b>
+					<br>
+					<b>Thời gian trồng: </b>
+					<br>
+					<b>Đặc điểm, công dụng của cây: </b>
+				</span>
+			</div>
+			
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_A2"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Nguyên Liệu A1</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<div style="text-align: justify;padding: 0px 1.5rem;">
+				<span>
+					<b>Tên cây trà: </b>
+					<b>Thời gian trồng: </b>
+					<b>Đặc điểm, công dụng của cây: </b>
+				</span>
+			</div>
+			
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_duoclieu"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Những Dược Liệu khác được trưng bày</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_vuonuom"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông tin vườn Ươm</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<span>
+				Khu vườn ươm là nơi nhân giống, tạo sự chủ động nguồn cung cho HTX cũng như vùng nguyên liệu được bền vững
+			</span>
+			
+
+		</div>
+
+	]]></data>
+	<data name="data_html_example_nhathumua"><![CDATA[
+
+		<div style="padding:10px; color:black ">
+
+			<h2 >Thông tin khu nhà ở và thu mua nguyên liệu</h2>
+			<hr style="border:0;border-top:1px solid white;">
+			<span>
+				
+			</span>
+			
+
+		</div>
+
+	]]></data>
+	<action name="add_html_code" type="Javascript">
+    <![CDATA[
+		var div = document.createElement("div");
+
+		var element = document.getElementsByClassName("form");
+
+		// basic styles to fit into the layer size and allow scrolling:
+		div.style.width = "100%";
+		div.style.height = "100%";
+		div.style.boxSizing = "border-box";
+		div.style.overflow = "auto";
+		div.style.textAlign = "center";
+
+		// allow text selection (optional):
+		div.style.webkitUserSelect =
+		div.style.MozUserSelect =
+		div.style.msUserSelect =
+		div.style.userSelect = "text";
+
+		function stopPropagation(e){ e.stopPropagation(); }
+		function preventDefault(e){ e.preventDefault(); }
+
+		// enable browsed-based mouse-wheel and touch-scrolling support:
+		div.addEventListener("wheel", stopPropagation, true);
+		div.addEventListener("mousewheel", stopPropagation, true);
+		div.addEventListener("DOMMouseScroll", stopPropagation, true);
+		div.addEventListener("touchstart", function(event){ if(krpano.device.ios && window.innerHeight == krpano.display.htmltarget.offsetHeight){ /* avoid the iOS 'overscrolling' for fullpage viewers */ var bs = document.body.parentNode.style; bs.position="fixed"; bs.top=0; bs.left=0; bs.right=0; bs.bottom=0; } krpano.control.preventTouchEvents = false; event.stopPropagation(); }, true);
+		div.addEventListener("touchend", function(event){ krpano.control.preventTouchEvents = true; event.stopPropagation(); }, true);
+		div.addEventListener("gesturestart", preventDefault, true);
+
+		// add the html code:
+		div.innerHTML = args[1];
+
+		// add the div to the layer element:
+		caller.sprite.appendChild(div);
+                console.log(args[4]);
+        if(args[5] != null){
+        document.getElementById("url_iframe").src = args[3] +"/"+ args[5];
+        }else{
+            document.getElementById("url_iframe").src = args[3];
+        }
+        document.getElementById("title_iframe").innerText = args[4];
+	]]></action>
+
+	<data name="data_html"><![CDATA[
+		<div style="padding:10px; overflow: hidden;">
+		<h5 id="title_iframe" style="color:black">Exhibitor's products</h5>
+		<iframe id="url_iframe"  frameborder="0" style="overflow: hidden;
+            width: 98%;
+            height: 80%;
+            padding:0px;
+            left:1%;
+            position: absolute;" ></iframe>
+                    </div>
+	]]></data>
+    <action name="trace_spot" ><![CDATA[
+    ifnot(spot_coordinates, def(spot_coordinates, string, ' '); );
+    	 screentosphere(mouse.x, mouse.y, m_ath, m_atv);
+          txtadd(spot_coordinates,
+          get(spot_coordinates),'
+          <spot ath="', get(m_ath) , '" atv="', get(m_atv) , '" />');
+          showlog();
+          trace(spot_coordinates); ]]>
+    </action>
+
+</krpano>

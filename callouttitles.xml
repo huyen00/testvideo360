@@ -1,0 +1,170 @@
+﻿<krpano logkey="true" cozorder="100">
+<events name="callout_events" onxmlcomplete="setup_callout_hotspots();" changetourlanguage="change_callout_language();" onmousedown="hideonuserclickhotspots()" keep="true"/>
+	
+<action name="pulse">tween(layer[%1].scale|layer[%1].alpha,3|0.0,2,,set(layer[%1].scale,1);set(layer[%1].alpha,1);pulse(%1));</action>	 
+<action name="hideonuserclickhotspots">
+for(set(i, 0), i LT hotspot.count, inc(i), 
+	if(hotspot[get(i)].callout_type == onuserclick,
+		callwith(hotspot[get(i)], oncallin);
+	);
+);	
+</action>	 
+	 
+<action name="animate_callout" scope="local">
+add(cozorder,1);
+set(caller.zorder,get(cozorder));
+stoptween(layer[%1].height);
+stoptween(layer[%2].width);
+stoptween(layer[%2].height);
+	
+tween(layer[%1].height,%5,0.3,easeOutQuad,
+	tween(layer[%2].height,calc(layer[%3].height + layer[%4].height),0.2,easeOutQuad,
+		if(layer[%3].width GT layer[%4].width,
+			set(titleoffset,calc(layer[%3].ox * 2));
+			Math.abs(titleoffset);
+			tween(layer[%2].width,calc(layer[%3].width + titleoffset))
+			,
+			set(titleoffset,calc(layer[%3].ox * 2));
+			Math.abs(titleoffset);
+			set(textoffset,calc(layer[%4].ox * 2));
+			Math.abs(textoffset);
+			tween(layer[%2].width,calc(layer[%4].width + titleoffset + textoffset))
+		);
+	)
+);
+</action>
+
+	
+<action name="animate_callin" scope="local">
+sub(cozorder,1);
+set(caller.zorder,1);
+stoptween(layer[%2].width);
+stoptween(layer[%2].height);
+stoptween(layer[%1].height);
+	
+tween(layer[%2].width,0,0.2,,
+	tween(layer[%2].height,0,0.1,easeOutQuad,
+	tween(layer[%1].height,0,0.2,easeOutQuad)
+	));	
+</action>
+	 
+<events name="testloaded" onloadcomplete="set(letspopup,true)" onremovepano="set(letspopup,false)" keep="true"/>	 
+<events name="testshotspots"/>
+
+<action name="testhotspots" protect="true">
+	if(letspopup,
+    for(set(i,0), i LT hotspot.count, inc(i),
+		if(hotspot[get(i)].callout_type == centerscreen,
+			if(view.fov LT hotspot[get(i)].minfov AND view.fov GT hotspot[get(i)].maxfov,
+        		getlooktodistance(d, hotspot[get(i)].ath, hotspot[get(i)].atv);
+        			if(d LT calc(view.fov / hotspot[get(i)].distancepopup),
+           				highlight_hotspot(get(i));
+          				,
+           				if(hotspot[get(i)].pumpitup, background_hotspot(get(i)););
+          				);
+			  ,
+			  background_hotspot(get(i));
+			  );
+		  );
+	  );
+	);
+</action>
+	
+<action name="highlight_hotspot">
+    if(hotspot[%1].ishighlighted != true,
+		set(hotspot[%1].ishighlighted, true);
+		callwith(hotspot[%1],oncallout);
+     );
+</action>
+
+<action name="background_hotspot">
+	if(hotspot[%1].ishighlighted,
+    	set(hotspot[%1].ishighlighted, false);
+		callwith(hotspot[%1],oncallin);
+	);
+</action>
+	 
+	 
+
+<action name="setup_bubble_hotspots_plugin" autorun="onstart" protect="true">
+
+</action>
+
+<action name="setup_callout_hotspots_once" autorun="preinit" protect="true">
+for(set(i,0), i LT style.count, inc(i),
+	if(style[get(i)].callout_type,
+		txtreplace(calloutstylename,style[get(i)].name,' ',);
+		txtadd(stylename,'Icon',get(calloutstylename));
+	
+		if(style[get(stylename)].onover,
+			txtadd(style[get(i)].onover,get(style[get(stylename)].onover));
+		);
+		if(style[get(stylename)].onout,
+			txtadd(style[get(i)].onout,get(style[get(stylename)].onout));
+		);
+	
+		set(style[get(i)].name,get(stylename));
+	);
+);
+</action>
+
+<action name="setup_callout_hotspots" protect="true">
+for(set(i,0), i LT hotspot.count, inc(i),
+
+	copy(hsaction,hotspot[get(i)].onclick);
+	
+	if(hsaction != null,
+		copy(panolinked,action[get(hsaction)].content);
+
+		indexoftxt(checkpano, get(panolinked), mainloadscene);
+		indexoftxt(checkgroup, get(panolinked), panoramagroup);
+		indexoftxt(checkphoto, get(panolinked), displayImage);
+		
+		if(checkpano != -1 AND checkgroup == -1,
+			indexoftxt(index, get(panolinked), 'mainloadscene(pano');
+			subtxt(panonum, get(panolinked), calc(index + 14), 12);
+			txtsplit(panonum,')', panoarray);
+			copy(hotspot[get(i)].linkedscene,panoarray[0].value);
+		);
+
+		if(checkgroup != -1,
+			indexoftxt(index, get(panolinked), panogroup);
+			subtxt(panonum, get(panolinked), get(index), 14);
+			txtsplit(panonum,']', grouparray);
+			copy(hotspot[get(i)].linkedgroup,grouparray[0].value);
+		);
+				
+		if(checkphoto != -1,
+			txtsplit(get(panolinked),',',photoarray);
+			copy(tempphotourl,photoarray[0].value);
+			txtreplace(tempphotourl,'displayImage(',);
+			copy(hotspot[get(i)].photourl,tempphotourl);
+		);
+		
+	);
+		
+);	  
+</action>
+
+
+ <action name="change_callout_language">
+for(set(i, 0), i LT hotspot.count, inc(i), 
+if(hotspot[get(i)].callout_type,
+	if(hotspot[get(i)].tooltip !== NULL AND hotspot[get(i)].tooltip != "",
+		getmessage(montitre, get(hotspot[get(i)].tooltip));
+		escape(montitre);
+		copy(layer[get(hotspot[get(i)].callout_title)].html,montitre);
+	 );
+	 if(hotspot[get(i)].descriptionid !== NULL AND hotspot[get(i)].descriptionid != "",
+		getmessage(madesc, get(hotspot[get(i)].descriptionid));
+		escape(madesc);
+		copy(layer[get(hotspot[get(i)].callout_desc)].html,madesc);
+	);
+    if(hotspot[get(i)].ishighlighted,
+		callwith(hotspot[get(i)],oncallout);
+     );
+);
+);
+
+	</action>
+</krpano>
